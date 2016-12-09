@@ -119,6 +119,10 @@ public class BunkersAndBadassesFieldConnectorFrame extends JFrame {
 				}
 			}
 		});
+		
+		JButton btnCheckConsistence = new JButton("Check Consistence");
+		btnCheckConsistence.setBackground(Color.GRAY);
+		panel.add(btnCheckConsistence, "cell 0 2,alignx center");
 		btnRemoveSelected.setBackground(Color.GRAY);
 		panel.add(btnRemoveSelected, "cell 1 2,alignx center");
 		

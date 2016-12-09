@@ -69,7 +69,7 @@ public class BunkersAndBadassesMapCreatorFrame extends JFrame {
 	private JTextField txtCurrentField;
 	
 	private Robot robot;
-	private JFileChooser fileChooser = new JFileChooser(new File("."));
+	private JFileChooser fileChooser;
 	private BoardLoader boardLoader = new BoardLoader();
 	
 	private Board currentBoard;
@@ -79,6 +79,7 @@ public class BunkersAndBadassesMapCreatorFrame extends JFrame {
 	private Color mouseColor;
 	
 	private DefaultListModel<Field> listModel = new DefaultListModel<Field>();
+	private JList<Field> list;
 	
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -115,6 +116,8 @@ public class BunkersAndBadassesMapCreatorFrame extends JFrame {
 	    catch (UnsupportedLookAndFeelException | ClassNotFoundException | InstantiationException | IllegalAccessException e) {
 	       //e.printStackTrace();
 	    }
+		
+		fileChooser = new JFileChooser(new File("."));
 		
 		contentPane = new JPanel();
 		contentPane.setBackground(Color.DARK_GRAY);
@@ -166,7 +169,7 @@ public class BunkersAndBadassesMapCreatorFrame extends JFrame {
 		panel_settings.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
 		panel_settings.setBackground(Color.GRAY);
 		panel.add(panel_settings, "cell 1 0,grow");
-		panel_settings.setLayout(new MigLayout("", "[][grow][]", "[][10px][][200px][][grow][grow][100px:n,grow][grow][]"));
+		panel_settings.setLayout(new MigLayout("", "[grow][grow][]", "[][10px][][200px][][grow][grow][100px:n,grow][grow][grow]"));
 		
 		JLabel lblBoardSettings = new JLabel("Board Settings");
 		lblBoardSettings.setFont(new Font("Tahoma", Font.BOLD, 20));
@@ -179,7 +182,7 @@ public class BunkersAndBadassesMapCreatorFrame extends JFrame {
 		JScrollPane scrollPane_1 = new JScrollPane();
 		panel_settings.add(scrollPane_1, "cell 0 3 3 1,grow");
 		
-		JList<Field> list = new JList<Field>(listModel);
+		list = new JList<Field>(listModel);
 		list.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		list.addListSelectionListener(new ListSelectionListener() {
@@ -196,7 +199,7 @@ public class BunkersAndBadassesMapCreatorFrame extends JFrame {
 					txtTroupsBadass.setText("(" + badassTroupPos.getX() + " | " + badassTroupPos.getY() + ")");
 					txtBuildingPosition.setText("(" + buildingPos.getX() + " | " + buildingPos.getY() + ")");
 					txtFieldColor.setText("(" + fieldColor.getRed() + ", " + fieldColor.getGreen() + ", " + fieldColor.getBlue() + ")");
-					setField(null);					
+					setField(list.getSelectedValue());					
 				}
 			}
 		});
@@ -282,8 +285,9 @@ public class BunkersAndBadassesMapCreatorFrame extends JFrame {
 		JButton btnNewField = new JButton("Create New Field");
 		btnNewField.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				currentField = new Field();
-				currentField.setName(txtNewFieldName.getText());
+				Field field = new Field();
+				field.setName(txtNewFieldName.getText());
+				setField(field);
 				txtField.setText(txtNewFieldName.getText());
 				txtNewFieldName.setText("");
 				txtFieldPosition.setText("");
@@ -484,13 +488,35 @@ public class BunkersAndBadassesMapCreatorFrame extends JFrame {
 		JButton btnAddField = new JButton("Add Field");
 		btnAddField.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				listModel.addElement(currentField);
+				if (list.getSelectedValue() == null || !list.getSelectedValue().getName().equals(currentField.getName())) {
+					listModel.addElement(currentField);	
+				}
 			}
 		});
 		panel_1.add(btnAddField, "cell 0 6 3 1,alignx center");
 		btnAddField.setBackground(Color.GRAY);
 		
+		JPanel panel_5 = new JPanel();
+		panel_5.setBackground(Color.GRAY);
+		panel_settings.add(panel_5, "cell 0 9 3 1,grow");
+		panel_5.setLayout(new MigLayout("", "[grow][][][grow]", "[]"));
+		
+		JButton btnLoadBoard = new JButton("Load Board");
+		btnLoadBoard.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (fileChooser.showOpenDialog(BunkersAndBadassesMapCreatorFrame.this) == JFileChooser.APPROVE_OPTION) {
+					currentBoard = boardLoader.loadBoard(fileChooser.getSelectedFile());
+					for (Field field : currentBoard.getFields()) {
+						listModel.addElement(field);
+					}
+				}
+			}
+		});
+		btnLoadBoard.setBackground(Color.GRAY);
+		panel_5.add(btnLoadBoard, "cell 1 0");
+		
 		JButton btnStoreBoard = new JButton("Store Board");
+		panel_5.add(btnStoreBoard, "cell 2 0");
 		btnStoreBoard.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (fileChooser.showSaveDialog(BunkersAndBadassesMapCreatorFrame.this) == JFileChooser.APPROVE_OPTION) {
@@ -500,7 +526,6 @@ public class BunkersAndBadassesMapCreatorFrame extends JFrame {
 			}
 		});
 		btnStoreBoard.setBackground(Color.GRAY);
-		panel_settings.add(btnStoreBoard, "cell 0 9 3 1,alignx center");
 	}
 	
 	public void setBoard(Board board) {

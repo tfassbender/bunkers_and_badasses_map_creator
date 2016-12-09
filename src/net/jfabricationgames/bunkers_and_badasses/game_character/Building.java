@@ -1,6 +1,10 @@
 package net.jfabricationgames.bunkers_and_badasses.game_character;
 
-public abstract class Building {
+import java.io.Serializable;
+
+public abstract class Building implements Serializable {
+	
+	private static final long serialVersionUID = -7099388827063901279L;
 	
 	protected int recruitableTroops;
 	protected int ammoMining;

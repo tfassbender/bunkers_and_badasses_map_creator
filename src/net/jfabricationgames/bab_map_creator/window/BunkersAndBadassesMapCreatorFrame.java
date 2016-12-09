@@ -15,30 +15,33 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
+import java.io.File;
 import java.util.List;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
-import com.jfabricationgames.toolbox.graphic.ImageLoader;
 import com.jfabricationgames.toolbox.graphic.ImagePanel;
 
+import net.jfabricationgames.bunkers_and_badasses.game_board.Board;
+import net.jfabricationgames.bunkers_and_badasses.game_board.BoardLoader;
 import net.jfabricationgames.bunkers_and_badasses.game_board.Field;
 import net.miginfocom.swing.MigLayout;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.event.ListSelectionEvent;
 
 public class BunkersAndBadassesMapCreatorFrame extends JFrame {
 	
@@ -61,18 +64,21 @@ public class BunkersAndBadassesMapCreatorFrame extends JFrame {
 	private JTextField txtColor;
 	private JTextField txtCurrentColor;
 	private JTextField txtFieldColor;
+	private JTextField txtClickedY;
+	private JTextField txtCurrentBoard;
+	private JTextField txtCurrentField;
 	
 	private Robot robot;
+	private JFileChooser fileChooser = new JFileChooser(new File("."));
+	private BoardLoader boardLoader = new BoardLoader();
 	
+	private Board currentBoard;
 	private Field currentField;
 	private Point clickedPosition;
 	private Color clickedColor;
 	private Color mouseColor;
 	
 	private DefaultListModel<Field> listModel = new DefaultListModel<Field>();
-	
-	private List<Field> fields = new ArrayList<Field>();
-	private JTextField txtClickedY;
 	
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -132,8 +138,7 @@ public class BunkersAndBadassesMapCreatorFrame extends JFrame {
 		panel_board.add(scrollPane, BorderLayout.CENTER);
 		scrollPane.getVerticalScrollBar().setUnitIncrement(20);
 		
-		ImageLoader loader = new ImageLoader();
-		panel_board_image = new ImagePanel(loader.loadImage("net/jfabricationgames/bab_map_creator/window/board_the_badlands.png"));
+		panel_board_image = new ImagePanel();
 		panel_board_image.addMouseMotionListener(new MouseMotionAdapter() {
 			@Override
 			public void mouseMoved(MouseEvent e) {
@@ -156,19 +161,18 @@ public class BunkersAndBadassesMapCreatorFrame extends JFrame {
 		});
 		panel_board_image.setBackground(Color.GRAY);
 		scrollPane.setViewportView(panel_board_image);
-		panel_board_image.setPreferredSize(new Dimension(2400, 1400));
 		
 		JPanel panel_settings = new JPanel();
 		panel_settings.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
 		panel_settings.setBackground(Color.GRAY);
 		panel.add(panel_settings, "cell 1 0,grow");
-		panel_settings.setLayout(new MigLayout("", "[][grow][]", "[][10px][][200px][][grow][100px:n,grow][grow]"));
+		panel_settings.setLayout(new MigLayout("", "[][grow][]", "[][10px][][200px][][grow][grow][100px:n,grow][grow][]"));
 		
 		JLabel lblBoardSettings = new JLabel("Board Settings");
 		lblBoardSettings.setFont(new Font("Tahoma", Font.BOLD, 20));
 		panel_settings.add(lblBoardSettings, "cell 0 0 3 1,alignx center");
 		
-		JLabel lblFields = new JLabel("Fields");
+		JLabel lblFields = new JLabel("Fields:");
 		lblFields.setFont(new Font("Tahoma", Font.PLAIN, 18));
 		panel_settings.add(lblFields, "cell 0 2 3 1");
 		
@@ -176,20 +180,24 @@ public class BunkersAndBadassesMapCreatorFrame extends JFrame {
 		panel_settings.add(scrollPane_1, "cell 0 3 3 1,grow");
 		
 		JList<Field> list = new JList<Field>(listModel);
+		list.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		list.addListSelectionListener(new ListSelectionListener() {
 			public void valueChanged(ListSelectionEvent e) {
-				Point fieldPos = list.getSelectedValue().getFieldPosition();
-				Point normalTroupPos = list.getSelectedValue().getNormalTroupsPosition();
-				Point badassTroupPos = list.getSelectedValue().getBadassTroupsPosition();
-				Point buildingPos = list.getSelectedValue().getBuildingPosition();
-				Color fieldColor = list.getSelectedValue().getFieldColor();
-				txtField.setText(list.getSelectedValue().getName());
-				txtFieldPosition.setText("(" + fieldPos.getX() + " | " + fieldPos.getY() + ")");
-				txtTroupsNormal.setText("(" + normalTroupPos.getX() + " | " + normalTroupPos.getY() + ")");
-				txtTroupsBadass.setText("(" + badassTroupPos.getX() + " | " + badassTroupPos.getY() + ")");
-				txtBuildingPosition.setText("(" + buildingPos.getX() + " | " + buildingPos.getY() + ")");
-				txtFieldColor.setText("(" + fieldColor.getRed() + ", " + fieldColor.getGreen() + ", " + fieldColor.getBlue() + ")");
-				currentField = null;
+				if (list.getSelectedValue() != null) {
+					Point fieldPos = list.getSelectedValue().getFieldPosition();
+					Point normalTroupPos = list.getSelectedValue().getNormalTroupsPosition();
+					Point badassTroupPos = list.getSelectedValue().getBadassTroupsPosition();
+					Point buildingPos = list.getSelectedValue().getBuildingPosition();
+					Color fieldColor = list.getSelectedValue().getFieldColor();
+					txtField.setText(list.getSelectedValue().getName());
+					txtFieldPosition.setText("(" + fieldPos.getX() + " | " + fieldPos.getY() + ")");
+					txtTroupsNormal.setText("(" + normalTroupPos.getX() + " | " + normalTroupPos.getY() + ")");
+					txtTroupsBadass.setText("(" + badassTroupPos.getX() + " | " + badassTroupPos.getY() + ")");
+					txtBuildingPosition.setText("(" + buildingPos.getX() + " | " + buildingPos.getY() + ")");
+					txtFieldColor.setText("(" + fieldColor.getRed() + ", " + fieldColor.getGreen() + ", " + fieldColor.getBlue() + ")");
+					setField(null);					
+				}
 			}
 		});
 		list.setBackground(Color.LIGHT_GRAY);
@@ -214,14 +222,53 @@ public class BunkersAndBadassesMapCreatorFrame extends JFrame {
 		btnOverview.setBackground(Color.GRAY);
 		panel_settings.add(btnOverview, "cell 0 4");
 		
+		JButton btnLoadBoardImage = new JButton("Load Board Image");
+		btnLoadBoardImage.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				new LoadBoardDialog(BunkersAndBadassesMapCreatorFrame.this).setVisible(true);
+			}
+		});
+		btnLoadBoardImage.setBackground(Color.GRAY);
+		panel_settings.add(btnLoadBoardImage, "cell 1 4,alignx center");
+		
 		JButton btnAddConnections = new JButton("Add Connections");
+		btnAddConnections.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				new BunkersAndBadassesFieldConnectorFrame(BunkersAndBadassesMapCreatorFrame.this, listModel.elements()).setVisible(true);
+			}
+		});
 		btnAddConnections.setBackground(Color.GRAY);
 		panel_settings.add(btnAddConnections, "cell 2 4,alignx right");
 		
+		JPanel panel_4 = new JPanel();
+		panel_4.setBackground(Color.GRAY);
+		panel_settings.add(panel_4, "cell 0 5 3 1,grow");
+		panel_4.setLayout(new MigLayout("", "[][grow][][grow]", "[]"));
+		
+		JLabel lblCurrentBoard = new JLabel("Current Board:");
+		panel_4.add(lblCurrentBoard, "cell 0 0,alignx trailing");
+		
+		txtCurrentBoard = new JTextField();
+		txtCurrentBoard.setText("null");
+		txtCurrentBoard.setBackground(Color.LIGHT_GRAY);
+		txtCurrentBoard.setEditable(false);
+		panel_4.add(txtCurrentBoard, "cell 1 0,growx");
+		txtCurrentBoard.setColumns(10);
+		
+		JLabel lblCurrentField = new JLabel("Current Field:");
+		panel_4.add(lblCurrentField, "cell 2 0,alignx trailing");
+		
+		txtCurrentField = new JTextField();
+		txtCurrentField.setText("null");
+		txtCurrentField.setBackground(Color.LIGHT_GRAY);
+		txtCurrentField.setEditable(false);
+		panel_4.add(txtCurrentField, "cell 3 0,growx");
+		txtCurrentField.setColumns(10);
+		
 		JPanel panel_2 = new JPanel();
 		panel_2.setBackground(Color.GRAY);
-		panel_settings.add(panel_2, "cell 0 5 3 1,growx,aligny center");
-		panel_2.setLayout(new MigLayout("", "[][][grow][grow]", "[][5px][]"));
+		panel_settings.add(panel_2, "cell 0 6 3 1,growx,aligny center");
+		panel_2.setLayout(new MigLayout("", "[][grow][fill]", "[][5px][]"));
 		
 		JLabel lblNewFieldName = new JLabel("New Field Name:");
 		lblNewFieldName.setFont(new Font("Tahoma", Font.PLAIN, 12));
@@ -229,7 +276,7 @@ public class BunkersAndBadassesMapCreatorFrame extends JFrame {
 		
 		txtNewFieldName = new JTextField();
 		txtNewFieldName.setBackground(Color.LIGHT_GRAY);
-		panel_2.add(txtNewFieldName, "cell 1 0 2 1,growx");
+		panel_2.add(txtNewFieldName, "cell 1 0,growx");
 		txtNewFieldName.setColumns(10);
 		
 		JButton btnNewField = new JButton("Create New Field");
@@ -239,28 +286,38 @@ public class BunkersAndBadassesMapCreatorFrame extends JFrame {
 				currentField.setName(txtNewFieldName.getText());
 				txtField.setText(txtNewFieldName.getText());
 				txtNewFieldName.setText("");
+				txtFieldPosition.setText("");
+				txtTroupsNormal.setText("");
+				txtTroupsBadass.setText("");
+				txtBuildingPosition.setText("");
+				txtFieldColor.setText("");
 			}
 		});
-		panel_2.add(btnNewField, "cell 3 0");
+		panel_2.add(btnNewField, "cell 2 0");
 		btnNewField.setBackground(Color.GRAY);
-		
-		JButton btnDeleteSelectedField = new JButton("Delete Selected Field");
-		btnDeleteSelectedField.setBackground(Color.GRAY);
-		panel_2.add(btnDeleteSelectedField, "cell 0 2 2 1");
 		
 		JLabel lblCurrentColor = new JLabel("Current Color:");
 		lblCurrentColor.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		panel_2.add(lblCurrentColor, "cell 2 2,alignx trailing");
+		panel_2.add(lblCurrentColor, "cell 0 2,alignx trailing");
 		
 		txtCurrentColor = new JTextField();
 		txtCurrentColor.setBackground(Color.LIGHT_GRAY);
 		txtCurrentColor.setEditable(false);
-		panel_2.add(txtCurrentColor, "cell 3 2,growx");
+		panel_2.add(txtCurrentColor, "cell 1 2,growx");
 		txtCurrentColor.setColumns(10);
+		
+		JButton btnDeleteSelectedField = new JButton("Delete Selected Field");
+		btnDeleteSelectedField.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				listModel.remove(list.getSelectedIndex());
+			}
+		});
+		btnDeleteSelectedField.setBackground(Color.GRAY);
+		panel_2.add(btnDeleteSelectedField, "cell 2 2");
 		
 		JPanel panel_3 = new JPanel();
 		panel_3.setBackground(Color.GRAY);
-		panel_settings.add(panel_3, "cell 0 6 3 1,growx,aligny center");
+		panel_settings.add(panel_3, "cell 0 7 3 1,growx,aligny center");
 		panel_3.setLayout(new MigLayout("", "[][50px][10px][50px][grow]", "[][][]"));
 		
 		JLabel lblFieldName = new JLabel("Field Name:");
@@ -317,7 +374,7 @@ public class BunkersAndBadassesMapCreatorFrame extends JFrame {
 		
 		JPanel panel_1 = new JPanel();
 		panel_1.setBackground(Color.GRAY);
-		panel_settings.add(panel_1, "cell 0 7 3 1,growx,aligny center");
+		panel_settings.add(panel_1, "cell 0 8 3 1,growx,aligny center");
 		panel_1.setLayout(new MigLayout("", "[][grow][]", "[][][][][][10px][]"));
 		
 		JLabel lblFieldPosition = new JLabel("Field Position:");
@@ -427,12 +484,55 @@ public class BunkersAndBadassesMapCreatorFrame extends JFrame {
 		JButton btnAddField = new JButton("Add Field");
 		btnAddField.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				fields.add(currentField);
 				listModel.addElement(currentField);
 			}
 		});
 		panel_1.add(btnAddField, "cell 0 6 3 1,alignx center");
 		btnAddField.setBackground(Color.GRAY);
+		
+		JButton btnStoreBoard = new JButton("Store Board");
+		btnStoreBoard.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (fileChooser.showSaveDialog(BunkersAndBadassesMapCreatorFrame.this) == JFileChooser.APPROVE_OPTION) {
+					File file = fileChooser.getSelectedFile();
+					boardLoader.storeBoard(currentBoard, file);
+				}
+			}
+		});
+		btnStoreBoard.setBackground(Color.GRAY);
+		panel_settings.add(btnStoreBoard, "cell 0 9 3 1,alignx center");
+	}
+	
+	public void setBoard(Board board) {
+		currentBoard = board;
+		currentField = null;
+		listModel.removeAllElements();
+		if (board != null) {
+			txtCurrentBoard.setText(board.getName());
+			panel_board_image.setImage(board.getBaseImage());
+			scrollPane.setPreferredSize(new Dimension(board.getBaseImage().getWidth(), board.getBaseImage().getHeight()));
+			
+			panel_board_image.revalidate();
+			panel_board_image.repaint();
+		}
+		else {
+			txtCurrentBoard.setText("null");
+		}
+	}
+	private void setField(Field field) {
+		currentField = field;
+		if (field != null) {
+			txtCurrentField.setText(field.getName());
+		}
+		else {
+			txtCurrentField.setText("null");
+		}
+	}
+	
+	public void setBoardFields(List<Field> fields) {
+		if (currentBoard != null) {
+			currentBoard.setFields(fields);
+		}
 	}
 	
 	private int[] calculatePosition(Point p) {

@@ -2,13 +2,17 @@ package net.jfabricationgames.bunkers_and_badasses.game_board;
 
 import java.awt.Color;
 import java.awt.Point;
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import net.jfabricationgames.bunkers_and_badasses.game_character.Building;
 import net.jfabricationgames.bunkers_and_badasses.game_character.Troop;
 import net.jfabricationgames.bunkers_and_badasses.user.User;
 
-public class Field {
+public class Field implements Serializable {
+	
+	private static final long serialVersionUID = 1904454857903005846L;
 	
 	private List<Field> neighbours;
 	private User affiliation;
@@ -22,6 +26,11 @@ public class Field {
 	private Point buildingPosition;
 	
 	private Color fieldColor;
+	
+	public Field() {
+		neighbours = new ArrayList<Field>();
+		troops = new ArrayList<Troop>();
+	}
 	
 	@Override
 	public String toString() {

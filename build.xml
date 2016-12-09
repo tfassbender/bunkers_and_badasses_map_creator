@@ -9,7 +9,7 @@
 
 	<property name="project_name">Bunkers_And_Badasses_Map_Creator</property>
 
-	<property name="mainClass">net.jfabricationgames.bunkers_and_badasses_map_creator.???</property>
+	<property name="mainClass">net.jfabricationgames.bab_map_creator.window.BunkersAndBadassesMapCreatorFrame</property>
 
 	<property name="src">src/</property>
 	<property name="build">build/</property>
@@ -44,6 +44,11 @@
 			</fileset>
 			<zipgroupfileset dir="." includes="*.jar" />
 		</jar>
+	</target>
+
+	<target name="clean">
+		<delete dir="${build}" />
+		<delete dir="${dist}" />
 	</target>
 
 </project>

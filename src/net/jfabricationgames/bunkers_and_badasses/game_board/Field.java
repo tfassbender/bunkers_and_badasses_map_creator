@@ -19,6 +19,7 @@ public class Field implements Serializable {
 	private List<Troop> troops;
 	private Building building;
 	private String name;
+	private Region region;
 	
 	private Point fieldPosition;
 	private Point normalTroupsPosition;
@@ -63,6 +64,13 @@ public class Field implements Serializable {
 	}
 	public void setBuilding(Building building) {
 		this.building = building;
+	}
+	
+	public Region getRegion() {
+		return region;
+	}
+	public void setRegion(Region region) {
+		this.region = region;
 	}
 	
 	public Point getFieldPosition() {

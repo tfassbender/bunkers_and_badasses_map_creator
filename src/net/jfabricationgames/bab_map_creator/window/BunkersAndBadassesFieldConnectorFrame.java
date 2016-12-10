@@ -44,7 +44,7 @@ public class BunkersAndBadassesFieldConnectorFrame extends JFrame {
 		setLocationRelativeTo(callingFrame);
 		
 		fields = new ArrayList<Field>();
-		while(allFields.hasMoreElements()){
+		while (allFields.hasMoreElements()) {
 			fields.add(allFields.nextElement());
 		}
 		

@@ -14,6 +14,7 @@ public class Board implements Serializable {
 	private static final long serialVersionUID = 4537459302664184784L;
 	
 	private List<Field> fields;
+	private List<Region> regions;
 	private transient BufferedImage baseImage;
 	private String name;
 
@@ -70,5 +71,12 @@ public class Board implements Serializable {
 	}
 	public void setName(String name) {
 		this.name = name;
+	}
+	
+	public List<Region> getRegions() {
+		return regions;
+	}
+	public void setRegions(List<Region> regions) {
+		this.regions = regions;
 	}
 }

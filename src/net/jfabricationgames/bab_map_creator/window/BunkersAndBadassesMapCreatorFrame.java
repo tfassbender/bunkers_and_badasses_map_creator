@@ -244,7 +244,7 @@ public class BunkersAndBadassesMapCreatorFrame extends JFrame {
 		JButton btnAddConnections = new JButton("Add Connections");
 		btnAddConnections.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				new BunkersAndBadassesFieldConnectorFrame(BunkersAndBadassesMapCreatorFrame.this, listModel.elements()).setVisible(true);
+				new FieldConnectorFrame(BunkersAndBadassesMapCreatorFrame.this, listModel.elements()).setVisible(true);
 			}
 		});
 		btnAddConnections.setBackground(Color.GRAY);
@@ -550,19 +550,64 @@ public class BunkersAndBadassesMapCreatorFrame extends JFrame {
 		panel_5.add(btnStoreBoard, "cell 2 0");
 		btnStoreBoard.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (fileChooser.showSaveDialog(BunkersAndBadassesMapCreatorFrame.this) == JFileChooser.APPROVE_OPTION) {
-					File file = fileChooser.getSelectedFile();
-					for (Region region : currentBoard.getRegions()) {//add the fields to the regions
-						region.setFields(new ArrayList<Field>());
+				if (currentBoard.getFields() == null) {
+					new FieldConnectorFrame(BunkersAndBadassesMapCreatorFrame.this, listModel.elements()).setVisible(true);
+					return;
+				}
+				try {
+					checkForDuplications();
+					if (fileChooser.showSaveDialog(BunkersAndBadassesMapCreatorFrame.this) == JFileChooser.APPROVE_OPTION) {
+						File file = fileChooser.getSelectedFile();
+						for (Region region : currentBoard.getRegions()) {//add the fields to the regions
+							region.setFields(new ArrayList<Field>());
+						}
+						for (Field field : currentBoard.getFields()) {
+							field.getRegion().addField(field);
+						}
+						boardLoader.storeBoard(currentBoard, file);
 					}
-					for (Field field : currentBoard.getFields()) {
-						field.getRegion().addField(field);
-					}
-					boardLoader.storeBoard(currentBoard, file);
+				}
+				catch (Exception ex) {
+					//ex.printStackTrace();
 				}
 			}
 		});
 		btnStoreBoard.setBackground(Color.GRAY);
+	}
+	
+	public void checkForDuplications() throws Exception {
+		List<Point> allPoints = new ArrayList<Point>(currentBoard.getFields().size()*4);
+		List<Color> allColors = new ArrayList<Color>(currentBoard.getFields().size());
+		List<Field> duplicatePoints = new ArrayList<Field>();
+		List<Field> duplicateColors = new ArrayList<Field>();
+		for (Field field : currentBoard.getFields()) {
+			if (allPoints.contains(field.getFieldPosition())) {
+				duplicatePoints.add(field);
+			}
+			allPoints.add(field.getFieldPosition());
+			if (allPoints.contains(field.getNormalTroupsPosition())) {
+				duplicatePoints.add(field);
+			}
+			allPoints.add(field.getNormalTroupsPosition());
+			if (allPoints.contains(field.getBadassTroupsPosition())) {
+				duplicatePoints.add(field);
+			}
+			allPoints.add(field.getBadassTroupsPosition());
+			if (allPoints.contains(field.getBuildingPosition())) {
+				duplicatePoints.add(field);
+			}
+			allPoints.add(field.getBuildingPosition());
+		}
+		for (Field field : currentBoard.getFields()) {
+			if (allColors.contains(field.getFieldColor())) {
+				duplicateColors.add(field);
+			}
+			allColors.add(field.getFieldColor());
+		}
+		if (!duplicatePoints.isEmpty() || !duplicateColors.isEmpty()) {
+			new ColorPositionDuplicationDialog(this, duplicateColors, duplicatePoints).setVisible(true);
+			throw new Exception();//doesn't need to be specified
+		}
 	}
 	
 	public void setBoard(Board board) {

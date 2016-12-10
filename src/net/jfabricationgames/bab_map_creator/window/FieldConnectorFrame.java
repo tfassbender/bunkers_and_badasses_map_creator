@@ -24,7 +24,7 @@ import javax.swing.event.ListSelectionListener;
 import net.jfabricationgames.bunkers_and_badasses.game_board.Field;
 import net.miginfocom.swing.MigLayout;
 
-public class BunkersAndBadassesFieldConnectorFrame extends JFrame {
+public class FieldConnectorFrame extends JFrame {
 	
 	private static final long serialVersionUID = 4561226752735012591L;
 	
@@ -36,8 +36,8 @@ public class BunkersAndBadassesFieldConnectorFrame extends JFrame {
 	private DefaultListModel<Field> connectionsModel = new DefaultListModel<Field>();
 	private DefaultListModel<Field> allFieldsModel = new DefaultListModel<Field>();
 	
-	public BunkersAndBadassesFieldConnectorFrame(BunkersAndBadassesMapCreatorFrame callingFrame, Enumeration<Field> allFields) {
-		setIconImage(Toolkit.getDefaultToolkit().getImage(BunkersAndBadassesFieldConnectorFrame.class.getResource("/com/jfabricationgames/toolbox/images/icon.png")));
+	public FieldConnectorFrame(BunkersAndBadassesMapCreatorFrame callingFrame, Enumeration<Field> allFields) {
+		setIconImage(Toolkit.getDefaultToolkit().getImage(FieldConnectorFrame.class.getResource("/com/jfabricationgames/toolbox/images/icon.png")));
 		setTitle("Bunkers And Badasses - Field Connector");
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 800, 400);

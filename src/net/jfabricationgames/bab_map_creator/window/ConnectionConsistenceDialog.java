@@ -27,7 +27,7 @@ public class ConnectionConsistenceDialog extends JDialog {
 	
 	private final JPanel contentPanel = new JPanel();
 	
-	public ConnectionConsistenceDialog(BunkersAndBadassesFieldConnectorFrame callingFrame, boolean consistent, List<Field> inconsistentFields) {
+	public ConnectionConsistenceDialog(FieldConnectorFrame callingFrame, boolean consistent, List<Field> inconsistentFields) {
 		setAlwaysOnTop(true);
 		setIconImage(Toolkit.getDefaultToolkit().getImage(ConnectionConsistenceDialog.class.getResource("/com/jfabricationgames/toolbox/images/icon.png")));
 		setBounds(100, 100, 300, 300);

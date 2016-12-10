@@ -509,6 +509,7 @@ public class BunkersAndBadassesMapCreatorFrame extends JFrame {
 					for (Field field : currentBoard.getFields()) {
 						listModel.addElement(field);
 					}
+					panel_board_image.setImage(currentBoard.getBaseImage());
 				}
 			}
 		});

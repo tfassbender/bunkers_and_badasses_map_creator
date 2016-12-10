@@ -39,7 +39,7 @@ public class BunkersAndBadassesFieldConnectorFrame extends JFrame {
 	public BunkersAndBadassesFieldConnectorFrame(BunkersAndBadassesMapCreatorFrame callingFrame, Enumeration<Field> allFields) {
 		setIconImage(Toolkit.getDefaultToolkit().getImage(BunkersAndBadassesFieldConnectorFrame.class.getResource("/com/jfabricationgames/toolbox/images/icon.png")));
 		setTitle("Bunkers And Badasses - Field Connector");
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 800, 400);
 		setLocationRelativeTo(callingFrame);
 		
@@ -121,6 +121,11 @@ public class BunkersAndBadassesFieldConnectorFrame extends JFrame {
 		});
 		
 		JButton btnCheckConsistence = new JButton("Check Consistence");
+		btnCheckConsistence.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				checkFieldConnectionConsistence();
+			}
+		});
 		btnCheckConsistence.setBackground(Color.GRAY);
 		panel.add(btnCheckConsistence, "cell 0 2,alignx center");
 		btnRemoveSelected.setBackground(Color.GRAY);
@@ -161,5 +166,23 @@ public class BunkersAndBadassesFieldConnectorFrame extends JFrame {
 		});
 		btnCancel.setBackground(Color.GRAY);
 		panel_1.add(btnCancel, "cell 1 0");
+	}
+	
+	private void checkFieldConnectionConsistence() {
+		boolean fieldsConsistent = true;
+		List<Field> inconsistentFields = new ArrayList<Field>();
+		for (Field field : fields) {
+			for (Field neighbour : field.getNeighbours()) {
+				boolean foundField = false;
+				for (Field neighboursNeighbour : neighbour.getNeighbours()) {
+					foundField = foundField || neighboursNeighbour.getName().equals(field.getName());
+				}
+				fieldsConsistent = fieldsConsistent && foundField;
+				if (!foundField) {
+					inconsistentFields.add(field);
+				}
+			}
+		}
+		new ConnectionConsistenceDialog(this, fieldsConsistent, inconsistentFields).setVisible(true);
 	}
 }

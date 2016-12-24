@@ -1,10 +1,6 @@
-package net.jfabricationgames.bunkers_and_badasses.game_character;
+package net.jfabricationgames.bunkers_and_badasses.game_character.troop;
 
-import java.io.Serializable;
-
-public abstract class Troop implements Serializable{
-	
-	private static final long serialVersionUID = 6212351588292032077L;
+public abstract class Troop {
 	
 	public static final int PLAYER_TROOP = 1;
 	public static final int NEUTRAL_TROOP = 2;

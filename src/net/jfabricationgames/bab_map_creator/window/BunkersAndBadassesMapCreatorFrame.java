@@ -195,8 +195,8 @@ public class BunkersAndBadassesMapCreatorFrame extends JFrame {
 			public void valueChanged(ListSelectionEvent e) {
 				if (list.getSelectedValue() != null) {
 					Point fieldPos = list.getSelectedValue().getFieldPosition();
-					Point normalTroupPos = list.getSelectedValue().getNormalTroupsPosition();
-					Point badassTroupPos = list.getSelectedValue().getBadassTroupsPosition();
+					Point normalTroupPos = list.getSelectedValue().getNormalTroopsPosition();
+					Point badassTroupPos = list.getSelectedValue().getBadassTroopsPosition();
 					Point buildingPos = list.getSelectedValue().getBuildingPosition();
 					Color fieldColor = list.getSelectedValue().getFieldColor();
 					txtField.setText(list.getSelectedValue().getName());
@@ -439,7 +439,7 @@ public class BunkersAndBadassesMapCreatorFrame extends JFrame {
 		JButton btnSetCurrent = new JButton("Set Current");
 		btnSetCurrent.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				currentField.setNormalTroupsPosition(clickedPosition);
+				currentField.setNormalTroopsPosition(clickedPosition);
 				txtTroupsNormal.setText("(" + clickedPosition.getX() + " | " + clickedPosition.getY() + ")");
 			}
 		});
@@ -460,7 +460,7 @@ public class BunkersAndBadassesMapCreatorFrame extends JFrame {
 		JButton btnSetCurrent_1 = new JButton("Set Current");
 		btnSetCurrent_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				currentField.setBadassTroupsPosition(clickedPosition);
+				currentField.setBadassTroopsPosition(clickedPosition);
 				txtTroupsBadass.setText("(" + clickedPosition.getX() + " | " + clickedPosition.getY() + ")");
 			}
 		});
@@ -585,14 +585,14 @@ public class BunkersAndBadassesMapCreatorFrame extends JFrame {
 				duplicatePoints.add(field);
 			}
 			allPoints.add(field.getFieldPosition());
-			if (allPoints.contains(field.getNormalTroupsPosition())) {
+			if (allPoints.contains(field.getNormalTroopsPosition())) {
 				duplicatePoints.add(field);
 			}
-			allPoints.add(field.getNormalTroupsPosition());
-			if (allPoints.contains(field.getBadassTroupsPosition())) {
+			allPoints.add(field.getNormalTroopsPosition());
+			if (allPoints.contains(field.getBadassTroopsPosition())) {
 				duplicatePoints.add(field);
 			}
-			allPoints.add(field.getBadassTroupsPosition());
+			allPoints.add(field.getBadassTroopsPosition());
 			if (allPoints.contains(field.getBuildingPosition())) {
 				duplicatePoints.add(field);
 			}

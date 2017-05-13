@@ -78,6 +78,11 @@ public class LoadBoardDialog extends JDialog {
 		}
 		{
 			txtBoardName = new JTextField();
+			txtBoardName.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent arg0) {
+					submitBoard(callingFrame);
+				}
+			});
 			txtBoardName.setBackground(Color.LIGHT_GRAY);
 			panel.add(txtBoardName, "cell 1 1 2 1,growx");
 			txtBoardName.setColumns(10);
@@ -86,16 +91,7 @@ public class LoadBoardDialog extends JDialog {
 			JButton btnOk = new JButton("OK");
 			btnOk.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					if (!txtBoardImage.getText().isEmpty() && !txtBoardName.getText().isEmpty()) {
-						Board board = new Board();
-						BufferedImage img = loader.loadImage(image);
-						if (img != null) {
-							board.setBaseImage(img);
-							board.setName(txtBoardName.getText());
-							callingFrame.setBoard(board);
-						}
-					}
-					dispose();
+					submitBoard(callingFrame);
 				}
 			});
 			btnOk.setBackground(Color.GRAY);
@@ -111,5 +107,21 @@ public class LoadBoardDialog extends JDialog {
 			btnCancel.setBackground(Color.GRAY);
 			panel.add(btnCancel, "cell 2 3 2 1");
 		}
+	}
+	
+	private void submitBoard(BunkersAndBadassesMapCreatorFrame callingFrame) {
+		if (!txtBoardImage.getText().isEmpty() && !txtBoardName.getText().isEmpty()) {
+			Board board = callingFrame.getBoard();
+			if (board == null) {
+				board = new Board();
+			}
+			BufferedImage img = loader.loadImage(image);
+			if (img != null) {
+				board.setBaseImage(img);
+				board.setName(txtBoardName.getText());
+				callingFrame.setBoard(board);
+			}
+		}
+		dispose();
 	}
 }

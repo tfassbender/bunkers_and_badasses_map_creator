@@ -68,11 +68,14 @@ public class Board implements Serializable {
 	 * 		The BufferedImage.
 	 */
 	private BufferedImage loadBaseImage(ImageIcon imageIcon) {
-		BufferedImage img = new BufferedImage(imageIcon.getIconWidth(), imageIcon.getIconHeight(), BufferedImage.TYPE_INT_ARGB);
-		Graphics g = img.createGraphics();
-		imageIcon.paintIcon(null, g, 0, 0);
-		g.dispose();
-		return img;
+		if (imageIcon != null) {
+			BufferedImage img = new BufferedImage(imageIcon.getIconWidth(), imageIcon.getIconHeight(), BufferedImage.TYPE_INT_ARGB);
+			Graphics g = img.createGraphics();
+			imageIcon.paintIcon(null, g, 0, 0);
+			g.dispose();
+			return img;
+		}
+		return null;
 	}
 	
 	public List<Field> getFields() {

@@ -193,6 +193,13 @@ public class Field implements Serializable {
 		this.buildingPosition = buildingPosition;
 	}
 	
+	public Point getPlayerMarkerPosition() {
+		return playerMarkerPosition;
+	}
+	public void setPlayerMarkerPosition(Point playerMarkerPosition) {
+		this.playerMarkerPosition = playerMarkerPosition;
+	}
+	
 	public Color getFieldColor() {
 		return fieldColor;
 	}

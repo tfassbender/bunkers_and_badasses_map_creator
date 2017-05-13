@@ -86,6 +86,8 @@ public class BunkersAndBadassesMapCreatorFrame extends JFrame {
 	private DefaultListModel<Field> listModel = new DefaultListModel<Field>();
 	private JList<Field> list;
 	private JComboBox<Region> comboBox;
+	private JTextField txtCommandPosition;
+	private JTextField txtPosition;
 	
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -151,10 +153,15 @@ public class BunkersAndBadassesMapCreatorFrame extends JFrame {
 		panel_board_image.addMouseMotionListener(new MouseMotionAdapter() {
 			@Override
 			public void mouseMoved(MouseEvent e) {
+				int[] pos;
 				Point point = MouseInfo.getPointerInfo().getLocation();
 				Color color = robot.getPixelColor((int) point.getX(), (int) point.getY());
 				mouseColor = color;
 				txtCurrentColor.setText("(" + color.getRed() + ", " + color.getGreen() + ", " + color.getBlue() + ")");
+				if (panel_board_image.getImage() != null) {
+					pos = calculatePosition(e.getPoint());
+					txtPosition.setText("(" + Integer.toString(pos[0]) + "|" + Integer.toString(pos[1]) + ")");
+				}
 			}
 		});
 		panel_board_image.addMouseListener(new MouseAdapter() {
@@ -193,20 +200,53 @@ public class BunkersAndBadassesMapCreatorFrame extends JFrame {
 		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		list.addListSelectionListener(new ListSelectionListener() {
 			public void valueChanged(ListSelectionEvent e) {
-				if (list.getSelectedValue() != null) {
-					Point fieldPos = list.getSelectedValue().getFieldPosition();
-					Point normalTroupPos = list.getSelectedValue().getNormalTroopsPosition();
-					Point badassTroupPos = list.getSelectedValue().getBadassTroopsPosition();
-					Point buildingPos = list.getSelectedValue().getBuildingPosition();
-					Color fieldColor = list.getSelectedValue().getFieldColor();
-					txtField.setText(list.getSelectedValue().getName());
-					txtFieldPosition.setText("(" + fieldPos.getX() + " | " + fieldPos.getY() + ")");
-					txtTroupsNormal.setText("(" + normalTroupPos.getX() + " | " + normalTroupPos.getY() + ")");
-					txtTroupsBadass.setText("(" + badassTroupPos.getX() + " | " + badassTroupPos.getY() + ")");
-					txtBuildingPosition.setText("(" + buildingPos.getX() + " | " + buildingPos.getY() + ")");
-					txtFieldColor.setText("(" + fieldColor.getRed() + ", " + fieldColor.getGreen() + ", " + fieldColor.getBlue() + ")");
-					comboBox.setSelectedItem(list.getSelectedValue().getRegion());
-					setField(list.getSelectedValue());					
+				Field selectedField = list.getSelectedValue();
+				if (selectedField != null) {
+					Point fieldPos = selectedField.getFieldPosition();
+					Point normalTroupPos = selectedField.getNormalTroopsPosition();
+					Point badassTroupPos = selectedField.getBadassTroopsPosition();
+					Point buildingPos = selectedField.getBuildingPosition();
+					Point commandPos = selectedField.getPlayerMarkerPosition();
+					Color fieldColor = selectedField.getFieldColor();
+					txtField.setText(selectedField.getName());
+					if (fieldPos != null) {
+						txtFieldPosition.setText("(" + fieldPos.getX() + " | " + fieldPos.getY() + ")");
+					}
+					else {
+						txtFieldPosition.setText("");
+					}
+					if (normalTroupPos != null) {
+						txtTroupsNormal.setText("(" + normalTroupPos.getX() + " | " + normalTroupPos.getY() + ")");
+					}
+					else {
+						txtTroupsNormal.setText("");
+					}
+					if (badassTroupPos != null) {
+						txtTroupsBadass.setText("(" + badassTroupPos.getX() + " | " + badassTroupPos.getY() + ")");
+					}
+					else {
+						txtTroupsBadass.setText("");
+					}
+					if (buildingPos != null) {
+						txtBuildingPosition.setText("(" + buildingPos.getX() + " | " + buildingPos.getY() + ")");
+					}
+					else {
+						txtBuildingPosition.setText("");
+					}
+					if (fieldColor != null) {
+						txtFieldColor.setText("(" + fieldColor.getRed() + ", " + fieldColor.getGreen() + ", " + fieldColor.getBlue() + ")");
+					}
+					else {
+						txtFieldColor.setText("");
+					}
+					if (commandPos != null) {
+						txtCommandPosition.setText("(" + commandPos.getX() + " | " + commandPos.getY() + ")");
+					}
+					else {
+						txtCommandPosition.setText("");
+					}
+					comboBox.setSelectedItem(selectedField.getRegion());
+					setField(selectedField);
 				}
 			}
 		});
@@ -278,7 +318,7 @@ public class BunkersAndBadassesMapCreatorFrame extends JFrame {
 		JPanel panel_2 = new JPanel();
 		panel_2.setBackground(Color.GRAY);
 		panel_settings.add(panel_2, "cell 0 6 3 1,growx,aligny center");
-		panel_2.setLayout(new MigLayout("", "[][grow][fill]", "[][5px][]"));
+		panel_2.setLayout(new MigLayout("", "[][grow][fill]", "[][5px][][]"));
 		
 		JLabel lblNewFieldName = new JLabel("New Field Name:");
 		lblNewFieldName.setFont(new Font("Tahoma", Font.PLAIN, 12));
@@ -325,6 +365,16 @@ public class BunkersAndBadassesMapCreatorFrame extends JFrame {
 		});
 		btnDeleteSelectedField.setBackground(Color.GRAY);
 		panel_2.add(btnDeleteSelectedField, "cell 2 2");
+		
+		JLabel lblCurrentPosition = new JLabel("Current Position:");
+		lblCurrentPosition.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		panel_2.add(lblCurrentPosition, "cell 0 3,alignx trailing");
+		
+		txtPosition = new JTextField();
+		txtPosition.setEditable(false);
+		txtPosition.setBackground(Color.LIGHT_GRAY);
+		panel_2.add(txtPosition, "cell 1 3,growx");
+		txtPosition.setColumns(10);
 		
 		JPanel panel_3 = new JPanel();
 		panel_3.setBackground(Color.GRAY);
@@ -404,7 +454,7 @@ public class BunkersAndBadassesMapCreatorFrame extends JFrame {
 		JPanel panel_1 = new JPanel();
 		panel_1.setBackground(Color.GRAY);
 		panel_settings.add(panel_1, "cell 0 8 3 1,growx,aligny center");
-		panel_1.setLayout(new MigLayout("", "[][grow][]", "[][][][][][10px][]"));
+		panel_1.setLayout(new MigLayout("", "[][grow][]", "[][][][][][][10px][]"));
 		
 		JLabel lblFieldPosition = new JLabel("Field Position:");
 		lblFieldPosition.setFont(new Font("Tahoma", Font.PLAIN, 12));
@@ -490,14 +540,35 @@ public class BunkersAndBadassesMapCreatorFrame extends JFrame {
 		btnSetCurrent_2.setFont(new Font("Tahoma", Font.PLAIN, 11));
 		panel_1.add(btnSetCurrent_2, "cell 2 3");
 		
+		JLabel lblCommandPosition = new JLabel("Command Position:");
+		lblCommandPosition.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		panel_1.add(lblCommandPosition, "cell 0 4");
+		
+		txtCommandPosition = new JTextField();
+		txtCommandPosition.setEditable(false);
+		txtCommandPosition.setBackground(Color.LIGHT_GRAY);
+		txtCommandPosition.setFont(new Font("Tahoma", Font.PLAIN, 11));
+		panel_1.add(txtCommandPosition, "cell 1 4,growx");
+		txtCommandPosition.setColumns(10);
+		
+		JButton btnSetCurrent_5 = new JButton("Set Current");
+		btnSetCurrent_5.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				currentField.setPlayerMarkerPosition(clickedPosition);
+				txtCommandPosition.setText("(" + clickedPosition.getX() + " | " + clickedPosition.getY() + ")");
+			}
+		});
+		btnSetCurrent_5.setBackground(Color.GRAY);
+		panel_1.add(btnSetCurrent_5, "cell 2 4");
+		
 		JLabel lblFieldColor = new JLabel("Field Color:");
 		lblFieldColor.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		panel_1.add(lblFieldColor, "cell 0 4");
+		panel_1.add(lblFieldColor, "cell 0 5");
 		
 		txtFieldColor = new JTextField();
 		txtFieldColor.setEditable(false);
 		txtFieldColor.setBackground(Color.LIGHT_GRAY);
-		panel_1.add(txtFieldColor, "cell 1 4,growx");
+		panel_1.add(txtFieldColor, "cell 1 5,growx");
 		txtFieldColor.setColumns(10);
 		
 		JButton btnSetCurrent_4 = new JButton("Set Current");
@@ -508,7 +579,7 @@ public class BunkersAndBadassesMapCreatorFrame extends JFrame {
 			}
 		});
 		btnSetCurrent_4.setBackground(Color.GRAY);
-		panel_1.add(btnSetCurrent_4, "cell 2 4");
+		panel_1.add(btnSetCurrent_4, "cell 2 5");
 		
 		JButton btnAddField = new JButton("Add Field");
 		btnAddField.addActionListener(new ActionListener() {
@@ -519,7 +590,7 @@ public class BunkersAndBadassesMapCreatorFrame extends JFrame {
 				}
 			}
 		});
-		panel_1.add(btnAddField, "cell 0 6 3 1,alignx center");
+		panel_1.add(btnAddField, "cell 0 7 3 1,alignx center");
 		btnAddField.setBackground(Color.GRAY);
 		
 		JPanel panel_5 = new JPanel();
@@ -610,14 +681,23 @@ public class BunkersAndBadassesMapCreatorFrame extends JFrame {
 		}
 	}
 	
+	public Board getBoard() {
+		return currentBoard;
+	}
 	public void setBoard(Board board) {
 		currentBoard = board;
 		currentField = null;
-		listModel.removeAllElements();
+		//listModel.removeAllElements();
 		if (board != null) {
 			txtCurrentBoard.setText(board.getName());
 			panel_board_image.setImage(board.getBaseImage());
 			scrollPane.setPreferredSize(new Dimension(board.getBaseImage().getWidth(), board.getBaseImage().getHeight()));
+			
+			/*if (currentBoard.getFields() != null) {
+				for (Field field : currentBoard.getFields()) {
+					listModel.addElement(field);
+				}
+			}*/
 			
 			panel_board_image.revalidate();
 			panel_board_image.repaint();

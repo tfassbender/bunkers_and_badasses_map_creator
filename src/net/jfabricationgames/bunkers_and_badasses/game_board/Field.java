@@ -1,7 +1,7 @@
 package net.jfabricationgames.bunkers_and_badasses.game_board;
 
 import java.awt.Color;
-import java.awt.Graphics;
+//import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.io.Serializable;
@@ -33,7 +33,7 @@ public class Field implements Serializable {
 	
 	private Color fieldColor;
 	
-	private Board board;
+	//private Board board;
 	
 	private static transient BufferedImage normalTroopImage;
 	private static transient BufferedImage badassTroopImage;

@@ -1,17 +1,18 @@
 package net.jfabricationgames.bunkers_and_badasses.game_board;
 
 import java.awt.Color;
-//import java.awt.Graphics;
+import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-//import net.jfabricationgames.bunkers_and_badasses.game.UserColor;
 import net.jfabricationgames.bunkers_and_badasses.game_character.building.Building;
+import net.jfabricationgames.bunkers_and_badasses.game_character.building.EmptyBuilding;
+import net.jfabricationgames.bunkers_and_badasses.game_character.troop.Bandit;
+import net.jfabricationgames.bunkers_and_badasses.game_character.troop.CrimsonRaider;
 import net.jfabricationgames.bunkers_and_badasses.game_character.troop.Troop;
-//import net.jfabricationgames.bunkers_and_badasses.game_frame.GameFrame;
 import net.jfabricationgames.bunkers_and_badasses.user.User;
 
 public class Field implements Serializable {
@@ -24,31 +25,57 @@ public class Field implements Serializable {
 	private Building building;
 	private String name;
 	private Region region;
+	//private Command command;
 	
 	private Point fieldPosition;
 	private Point normalTroopsPosition;
 	private Point badassTroopsPosition;
 	private Point buildingPosition;
+	private Point commandMarkerPosition;
 	private Point playerMarkerPosition;
 	
 	private Color fieldColor;
 	
-	//private Board board;
+	private Board board;
 	
 	private static transient BufferedImage normalTroopImage;
 	private static transient BufferedImage badassTroopImage;
 	private static transient BufferedImage neutralTroopImage;
 	
-	/*static {
+	static {
 		//load the troop images
-		normalTroopImage = GameFrame.getImageLoader().loadImage("troops/bandit_3_small.png");
-		badassTroopImage = GameFrame.getImageLoader().loadImage("troops/lance_4_small.png");
-		neutralTroopImage = GameFrame.getImageLoader().loadImage("troops/skag_1_small.png");
-	}*/
+		/*if (!BunkersAndBadassesServer.IS_SERVER_APPLICATION) {
+			normalTroopImage = GameFrame.getImageLoader().loadImage("troops/bandit_3_small.png");
+			badassTroopImage = GameFrame.getImageLoader().loadImage("troops/lance_4_small.png");
+			neutralTroopImage = GameFrame.getImageLoader().loadImage("troops/skag_1_small.png");
+		}*/
+	}
 	
 	public Field() {
 		neighbours = new ArrayList<Field>();
 		troops = new ArrayList<Troop>();
+		building = new EmptyBuilding();
+	}
+	
+	@Override
+	public String toString() {
+		return name;
+	}
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof Field) {
+			Field field = (Field) obj;
+			boolean troopsEqual = getTroops().size() == field.getTroops().size();
+			if (troopsEqual) {
+				for (int i = 0; i < getTroops().size(); i++) {
+					troopsEqual &= getTroops().get(i).getType() == field.getTroops().get(i).getType() && getTroops().get(i).getStrength() == field.getTroops().get(i).getStrength();
+				}				
+			}
+			return field.getAffiliation().equals(getAffiliation()) && field.getBuilding().equals(getBuilding()) && field.getName().equals(getName()) && troopsEqual;
+		}
+		else {
+			return super.equals(obj);
+		}
 	}
 	
 	/**
@@ -62,8 +89,8 @@ public class Field implements Serializable {
 	 * 		The graphics object on that is drawn.
 	 * 		The graphics object is passed on from the board image drawing method.
 	 */
-	/*public void drawField(Graphics g) {
-		UserColor color;
+	public void drawField(Graphics g) {
+		/*UserColor color;
 		int normalTroops = getNormalTroops();
 		int badassTroops = getBadassTroops();
 		boolean neutrals = false;
@@ -81,10 +108,27 @@ public class Field implements Serializable {
 		else {
 			color = board.getGame().getColorManager().getUserColors().get(affiliation);
 		}
+		//set font and color
+		g.setFont(new Font("Arial", Font.PLAIN, normalTroopImage.getHeight()));
+		//g.setFont(new Font("Arial", Font.PLAIN, 30));
+		g.setColor(Color.BLACK);
+		//draw the troop images and numbers
 		if (neutrals) {
 			g.drawImage(neutralTroopImage, (int) normalTroopsPosition.getX(), (int) normalTroopsPosition.getY(), null);
+			g.drawString(Integer.toString(normalTroops), (int) normalTroopsPosition.getX()+neutralTroopImage.getWidth(), (int) normalTroopsPosition.getY()+neutralTroopImage.getHeight());
 		}
-	}*/
+		else {
+			g.drawImage(normalTroopImage, (int) normalTroopsPosition.getX(), (int) normalTroopsPosition.getY(), null);
+			g.drawString(Integer.toString(normalTroops), (int) normalTroopsPosition.getX()+normalTroopImage.getWidth(), (int) normalTroopsPosition.getY()+normalTroopImage.getHeight());
+			g.drawImage(badassTroopImage, (int) badassTroopsPosition.getX(), (int) badassTroopsPosition.getY(), null);
+			g.drawString(Integer.toString(badassTroops), (int) badassTroopsPosition.getX()+badassTroopImage.getWidth(), (int) badassTroopsPosition.getY()+badassTroopImage.getHeight());
+		}
+		//draw the building image
+		g.drawImage(building.getImage(), (int) buildingPosition.getX(), (int) buildingPosition.getY(), null);
+		//draw the user color
+		g.setColor(color.getColor());
+		g.fillOval((int) playerMarkerPosition.getX(), (int) playerMarkerPosition.getY(), 15, 15);*/
+	}
 	
 	/**
 	 * Count the number of normal troops (Bandits or Skags)
@@ -115,9 +159,93 @@ public class Field implements Serializable {
 		return badassTroops/2;
 	}
 	
-	@Override
-	public String toString() {
-		return name;
+	public void addNormalTroops(int num) {
+		for (int i = 0; i < num; i++) {
+			troops.add(new Bandit());
+		}
+	}
+	public void removeNormalTroops(int num) throws IllegalArgumentException {
+		int removedTroops = 0;
+		if (getNormalTroops() < num) {
+			throw new IllegalArgumentException("Not enough normal troops to remove.");
+		}
+		for (int i = 0; i < troops.size(); i++) {
+			if (removedTroops < num && troops.get(i).getStrength() == 1) {
+				troops.remove(i);
+				i--;
+				removedTroops++;
+			}
+		}
+	}
+	public void addBadassTroops(int num) {
+		for (int i = 0; i < num; i++) {
+			troops.add(new CrimsonRaider());
+		}
+	}
+	public void removeBadassTroops(int num) throws IllegalArgumentException {
+		int removedTroops = 0;
+		if (getBadassTroops() < num) {
+			throw new IllegalArgumentException("Not enough badass troops to remove.");
+		}
+		for (int i = 0; i < troops.size(); i++) {
+			if (removedTroops < num && troops.get(i).getStrength() == 2) {
+				troops.remove(i);
+				i--;
+				removedTroops++;
+			}
+		}
+	}
+	
+	/**
+	 * Get the strength of the field only by the troops (no additional defense).
+	 * 
+	 * @return
+	 * 		The troop strength.
+	 */
+	public int getTroopStrength() {
+		int strength = 0;
+		for (Troop troop : troops) {
+			strength += troop.getStrength();
+		}
+		return strength;
+	}
+	/**
+	 * Get the strength of this field with the additional defensive strength.
+	 * 
+	 * @return
+	 * 		The total defense strength of this field.
+	 */
+	/*public int getDefenceStrength() {
+		return getTroopStrength() + building.getAdditionalDefence();
+	}*/
+	
+	/**
+	 * Checks whether this field can get a command.
+	 * Fields can get commands if they host troops or special buildings (Arschgauls Palace or MoxxisTavern).
+	 */
+	/*public boolean isCommandPlaceable() {
+		return !troops.isEmpty() || building.isCommandExecutable();
+	}*/
+	
+	public Board getBoard() {
+		return board;
+	}
+	public void setBoard(Board board) {
+		this.board = board;
+	}
+	
+	public Point getCommandMarkerPosition() {
+		return commandMarkerPosition;
+	}
+	public void setCommandMarkerPosition(Point commandMarkerPosition) {
+		this.commandMarkerPosition = commandMarkerPosition;
+	}
+	
+	public Point getPlayerMarkerPosition() {
+		return playerMarkerPosition;
+	}
+	public void setPlayerMarkerPosition(Point playerMarkerPosition) {
+		this.playerMarkerPosition = playerMarkerPosition;
 	}
 	
 	public static BufferedImage getNormalTroopImage() {
@@ -165,6 +293,13 @@ public class Field implements Serializable {
 		this.region = region;
 	}
 	
+	/*public Command getCommand() {
+		return command;
+	}
+	public void setCommand(Command command) {
+		this.command = command;
+	}*/
+	
 	public Point getFieldPosition() {
 		return fieldPosition;
 	}
@@ -191,13 +326,6 @@ public class Field implements Serializable {
 	}
 	public void setBuildingPosition(Point buildingPosition) {
 		this.buildingPosition = buildingPosition;
-	}
-	
-	public Point getPlayerMarkerPosition() {
-		return playerMarkerPosition;
-	}
-	public void setPlayerMarkerPosition(Point playerMarkerPosition) {
-		this.playerMarkerPosition = playerMarkerPosition;
 	}
 	
 	public Color getFieldColor() {

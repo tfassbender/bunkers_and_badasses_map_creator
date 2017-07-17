@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.jfabricationgames.bunkers_and_badasses.game_character.building.Building;
-import net.jfabricationgames.bunkers_and_badasses.game_character.building.EmptyBuilding;
 import net.jfabricationgames.bunkers_and_badasses.game_character.troop.Bandit;
 import net.jfabricationgames.bunkers_and_badasses.game_character.troop.CrimsonRaider;
 import net.jfabricationgames.bunkers_and_badasses.game_character.troop.Troop;
@@ -54,7 +53,7 @@ public class Field implements Serializable {
 	public Field() {
 		neighbours = new ArrayList<Field>();
 		troops = new ArrayList<Troop>();
-		building = new EmptyBuilding();
+		//building = new EmptyBuilding();
 	}
 	
 	@Override

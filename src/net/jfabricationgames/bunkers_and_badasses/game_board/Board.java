@@ -39,7 +39,7 @@ public class Board implements Serializable {
 	private boolean storeImage;
 	private ImageIcon imageWrapper;
 	
-	private Robot robot;
+	private transient Robot robot;
 	
 	//private Game game;
 	

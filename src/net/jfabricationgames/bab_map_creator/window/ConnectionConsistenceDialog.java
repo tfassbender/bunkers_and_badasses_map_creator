@@ -3,25 +3,25 @@ package net.jfabricationgames.bab_map_creator.window;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
-import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.ListSelectionModel;
 import javax.swing.border.EmptyBorder;
 
 import net.jfabricationgames.bunkers_and_badasses.game_board.Field;
 import net.miginfocom.swing.MigLayout;
-import javax.swing.JList;
-import javax.swing.ListSelectionModel;
-import java.awt.Toolkit;
 
-public class ConnectionConsistenceDialog extends JDialog {
+public class ConnectionConsistenceDialog extends JFrame {
 	
 	private static final long serialVersionUID = -3441752381381356528L;
 	

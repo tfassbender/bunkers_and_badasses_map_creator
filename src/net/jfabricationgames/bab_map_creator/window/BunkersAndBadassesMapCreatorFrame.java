@@ -616,6 +616,11 @@ public class BunkersAndBadassesMapCreatorFrame extends JFrame {
 					currentField.setRegion((Region) comboBox.getSelectedItem());
 					listModel.addElement(currentField);	
 				}
+				else if (list.getSelectedValue().getName().equals(currentField.getName())) {
+					//update the values
+					Field field = list.getSelectedValue();
+					field.setRegion((Region) comboBox.getSelectedItem());
+				}
 			}
 		});
 		panel_1.add(btnAddField, "cell 0 8 3 1,alignx center");

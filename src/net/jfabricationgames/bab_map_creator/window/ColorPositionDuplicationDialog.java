@@ -10,7 +10,7 @@ import java.util.List;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
-import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -21,7 +21,7 @@ import javax.swing.border.EmptyBorder;
 import net.jfabricationgames.bunkers_and_badasses.game_board.Field;
 import net.miginfocom.swing.MigLayout;
 
-public class ColorPositionDuplicationDialog extends JDialog {
+public class ColorPositionDuplicationDialog extends JFrame {
 	
 	private static final long serialVersionUID = -157549768157295740L;
 	

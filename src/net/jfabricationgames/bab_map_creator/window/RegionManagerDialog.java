@@ -12,25 +12,25 @@ import java.util.List;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
-import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSpinner;
 import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import net.jfabricationgames.bunkers_and_badasses.game_board.Region;
 import net.miginfocom.swing.MigLayout;
-import javax.swing.JSpinner;
-import javax.swing.SpinnerNumberModel;
-import javax.swing.event.ChangeListener;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.ListSelectionModel;
 
-public class RegionManagerDialog extends JDialog {
+public class RegionManagerDialog extends JFrame {
 	
 	private static final long serialVersionUID = -8826382967712070339L;
 	
@@ -183,8 +183,10 @@ public class RegionManagerDialog extends JDialog {
 	
 	private void displayRegions(List<Region> regions) {
 		model.removeAllElements();
-		for (Region reg : regions) {
-			model.addElement(reg);
+		if (regions != null) {
+			for (Region reg : regions) {
+				model.addElement(reg);
+			}			
 		}
 	}
 	

@@ -46,6 +46,8 @@ import net.jfabricationgames.bunkers_and_badasses.game_board.BoardLoader;
 import net.jfabricationgames.bunkers_and_badasses.game_board.Field;
 import net.jfabricationgames.bunkers_and_badasses.game_board.Region;
 import net.miginfocom.swing.MigLayout;
+import javax.swing.JSpinner;
+import javax.swing.SpinnerNumberModel;
 
 public class BunkersAndBadassesMapCreatorFrame extends JFrame {
 	
@@ -108,7 +110,7 @@ public class BunkersAndBadassesMapCreatorFrame extends JFrame {
 		setTitle("Bunkers And Badasses - Map Creator");
 		setIconImage(Toolkit.getDefaultToolkit().getImage(BunkersAndBadassesMapCreatorFrame.class.getResource("/com/jfabricationgames/toolbox/images/icon.png")));
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 1300, 800);
+		setBounds(100, 100, 1300, 900);
 		setMinimumSize(new Dimension(1300, 800));
 		setLocationRelativeTo(null);
 		
@@ -183,7 +185,7 @@ public class BunkersAndBadassesMapCreatorFrame extends JFrame {
 		panel_settings.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
 		panel_settings.setBackground(Color.GRAY);
 		panel.add(panel_settings, "cell 1 0,grow");
-		panel_settings.setLayout(new MigLayout("", "[grow][grow][]", "[][10px][][200px][][grow][grow][100px:n,grow][grow][grow]"));
+		panel_settings.setLayout(new MigLayout("", "[grow][grow][]", "[][10px][][200px][][grow][grow][grow][100px:n,grow][grow][grow]"));
 		
 		JLabel lblBoardSettings = new JLabel("Board Settings");
 		lblBoardSettings.setFont(new Font("Tahoma", Font.BOLD, 20));
@@ -323,9 +325,30 @@ public class BunkersAndBadassesMapCreatorFrame extends JFrame {
 		panel_4.add(txtCurrentField, "cell 3 0,growx");
 		txtCurrentField.setColumns(10);
 		
+		JPanel panel_6 = new JPanel();
+		panel_6.setBackground(Color.GRAY);
+		panel_settings.add(panel_6, "cell 0 6 3 1,grow");
+		panel_6.setLayout(new MigLayout("", "[grow][][50px][10px][][50px][grow]", "[]"));
+		
+		JLabel lblPlayersmin = new JLabel("Players (min):");
+		panel_6.add(lblPlayersmin, "cell 1 0");
+		
+		JSpinner spinner = new JSpinner();
+		spinner.setModel(new SpinnerNumberModel(2, 2, 8, 1));
+		spinner.setBackground(Color.LIGHT_GRAY);
+		panel_6.add(spinner, "cell 2 0,growx");
+		
+		JLabel lblPlayersmax = new JLabel("Players (max):");
+		panel_6.add(lblPlayersmax, "cell 4 0");
+		
+		JSpinner spinner_1 = new JSpinner();
+		spinner_1.setModel(new SpinnerNumberModel(2, 2, 8, 1));
+		spinner_1.setBackground(Color.LIGHT_GRAY);
+		panel_6.add(spinner_1, "cell 5 0,growx");
+		
 		JPanel panel_2 = new JPanel();
 		panel_2.setBackground(Color.GRAY);
-		panel_settings.add(panel_2, "cell 0 6 3 1,growx,aligny center");
+		panel_settings.add(panel_2, "cell 0 7 3 1,growx,aligny center");
 		panel_2.setLayout(new MigLayout("", "[][grow][fill]", "[][5px][][]"));
 		
 		JLabel lblNewFieldName = new JLabel("New Field Name:");
@@ -349,6 +372,8 @@ public class BunkersAndBadassesMapCreatorFrame extends JFrame {
 				txtTroupsNormal.setText("");
 				txtTroupsBadass.setText("");
 				txtBuildingPosition.setText("");
+				txtCommandPosition.setText("");
+				txtMarkerposition.setText("");
 				txtFieldColor.setText("");
 			}
 		});
@@ -386,7 +411,7 @@ public class BunkersAndBadassesMapCreatorFrame extends JFrame {
 		
 		JPanel panel_3 = new JPanel();
 		panel_3.setBackground(Color.GRAY);
-		panel_settings.add(panel_3, "cell 0 7 3 1,growx,aligny center");
+		panel_settings.add(panel_3, "cell 0 8 3 1,growx,aligny center");
 		panel_3.setLayout(new MigLayout("", "[][50px][10px][50px][][grow]", "[][][][]"));
 		
 		JLabel lblFieldName = new JLabel("Field Name:");
@@ -461,7 +486,7 @@ public class BunkersAndBadassesMapCreatorFrame extends JFrame {
 		
 		JPanel panel_1 = new JPanel();
 		panel_1.setBackground(Color.GRAY);
-		panel_settings.add(panel_1, "cell 0 8 3 1,growx,aligny center");
+		panel_settings.add(panel_1, "cell 0 9 3 1,growx,aligny center");
 		panel_1.setLayout(new MigLayout("", "[][grow][]", "[][][][][][][][10px][]"));
 		
 		JLabel lblFieldPosition = new JLabel("Field Position:");
@@ -628,7 +653,7 @@ public class BunkersAndBadassesMapCreatorFrame extends JFrame {
 		
 		JPanel panel_5 = new JPanel();
 		panel_5.setBackground(Color.GRAY);
-		panel_settings.add(panel_5, "cell 0 9 3 1,grow");
+		panel_settings.add(panel_5, "cell 0 10 3 1,grow");
 		panel_5.setLayout(new MigLayout("", "[grow][][][grow]", "[]"));
 		
 		JButton btnLoadBoard = new JButton("Load Board");

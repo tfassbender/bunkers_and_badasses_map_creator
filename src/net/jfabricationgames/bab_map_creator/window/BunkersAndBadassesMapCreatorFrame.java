@@ -333,18 +333,18 @@ public class BunkersAndBadassesMapCreatorFrame extends JFrame {
 		JLabel lblPlayersmin = new JLabel("Players (min):");
 		panel_6.add(lblPlayersmin, "cell 1 0");
 		
-		JSpinner spinner = new JSpinner();
-		spinner.setModel(new SpinnerNumberModel(2, 2, 8, 1));
-		spinner.setBackground(Color.LIGHT_GRAY);
-		panel_6.add(spinner, "cell 2 0,growx");
+		JSpinner spinner_players_min = new JSpinner();
+		spinner_players_min.setModel(new SpinnerNumberModel(2, 2, 8, 1));
+		spinner_players_min.setBackground(Color.LIGHT_GRAY);
+		panel_6.add(spinner_players_min, "cell 2 0,growx");
 		
 		JLabel lblPlayersmax = new JLabel("Players (max):");
 		panel_6.add(lblPlayersmax, "cell 4 0");
 		
-		JSpinner spinner_1 = new JSpinner();
-		spinner_1.setModel(new SpinnerNumberModel(2, 2, 8, 1));
-		spinner_1.setBackground(Color.LIGHT_GRAY);
-		panel_6.add(spinner_1, "cell 5 0,growx");
+		JSpinner spinner_players_max = new JSpinner();
+		spinner_players_max.setModel(new SpinnerNumberModel(2, 2, 8, 1));
+		spinner_players_max.setBackground(Color.LIGHT_GRAY);
+		panel_6.add(spinner_players_max, "cell 5 0,growx");
 		
 		JPanel panel_2 = new JPanel();
 		panel_2.setBackground(Color.GRAY);
@@ -667,6 +667,10 @@ public class BunkersAndBadassesMapCreatorFrame extends JFrame {
 					for (Region region : currentBoard.getRegions()) {
 						model.addElement(region);
 					}
+					int playersMin = currentBoard.getPlayersMin();
+					int playersMax = currentBoard.getPlayersMax();
+					spinner_players_min.setValue(playersMin < 2 ? 2 : playersMin > 8 ? 8 : playersMin);
+					spinner_players_max.setValue(playersMax < 2 ? 2 : playersMax > 8 ? 8 : playersMax);
 					txtCurrentBoard.setText(currentBoard.getName());
 					panel_board_image.setImage(currentBoard.getBaseImage());
 				}
@@ -693,6 +697,8 @@ public class BunkersAndBadassesMapCreatorFrame extends JFrame {
 						for (Field field : currentBoard.getFields()) {
 							field.getRegion().addField(field);
 						}
+						currentBoard.setPlayersMin((Integer) spinner_players_min.getValue());
+						currentBoard.setPlayersMax((Integer) spinner_players_max.getValue());
 						currentBoard.setStoreImage(true);
 						boardLoader.storeBoard(currentBoard, file);
 					}

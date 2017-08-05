@@ -194,6 +194,7 @@ public class RegionManagerDialog extends JFrame {
 		if (!txtRegion.getText().isEmpty()) {
 			Region region = new Region();
 			region.setName(txtRegion.getText());
+			region.setPoints((Integer) spinner.getValue());
 			model.addElement(region);
 			txtRegion.setText("");
 		}

@@ -3,7 +3,7 @@
 
 	<property name="version.mayor">1</property>
 	<property name="version.minor">2</property>
-	<property name="version.patch">6</property>
+	<property name="version.patch">7</property>
 
 	<property name="version">V${version.mayor}.${version.minor}.${version.patch}</property>
 
